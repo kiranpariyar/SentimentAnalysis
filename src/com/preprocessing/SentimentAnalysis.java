@@ -17,17 +17,21 @@ import java.util.Properties;
 public class SentimentAnalysis {
 
     static StanfordCoreNLP pipeline;
+    public static ArrayList<Integer> sentimentRank;
 
+    //initializing pipeline with annotators "tokenize, ssplit parse and sentiment"
     public static void init() {
         Properties properties = new Properties();
         properties.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
         pipeline = new StanfordCoreNLP(properties);
     }
 
-    public static void findSentiment(ArrayList<String> alltweet) {
+    //performing sentiment analysis on tweets
+    public static ArrayList<Integer> findSentiment(ArrayList<String> alltweet) {
+        sentimentRank = new ArrayList<Integer>();
         String tweet;
 
-        for(int i=0; i<alltweet.size(); i++) {
+        for (int i = 0; i < alltweet.size(); i++) {
             int mainSentiment = 0;
             tweet = alltweet.get(i);
             if (tweet != null && tweet.length() > 0) {
@@ -45,26 +49,38 @@ public class SentimentAnalysis {
                     }
                 }
             }
+//            System.out.println(tweet + " : "+ mainSentiment );
+            sentimentRank.add(mainSentiment);
+        }
 
-            switch (mainSentiment){
+        return sentimentRank;
+    }
+}
+
+
+
+        /*    switch (mainSentiment){
                 case 0:
+//                    sentRank = "Very Negative";
                     System.out.println(tweet + " :Very Negative "+ mainSentiment );
                     break;
                 case 1:
+//                    sentRank = "Negative";
                     System.out.println(tweet + " : Negative "+ mainSentiment );
                     break;
                 case 2:
+//                    sentRank = "Neutral";
                     System.out.println(tweet + " : Neutral "+ mainSentiment );
                     break;
                 case 3:
+//                    sentRank = "Positive";
                     System.out.println(tweet + " : Positive "+ mainSentiment );
                     break;
                 case 4:
+//                    sentRank = "very positive";
                     System.out.println(tweet + " : Very Positive "+ mainSentiment );
                     break;
                 default:
                     System.out.println("Sentiment cannot be predicted:");
-            }
-        }
-    }
-}
+            }*/
+

@@ -1,35 +1,34 @@
 package com.preprocessing;
 
-import java.io.*;
+import dataretrievtion.RetrieveData;
+import dataretrievtion.Tweet;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
 
     public static void main(String[] args) throws IOException {
-
+        int sizeOfTweet;
+        ArrayList<Tweet> tweetArrayList = new ArrayList<Tweet>();
         ArrayList<String> tweets = new ArrayList<String>();
-        DataInputStream testData = new DataInputStream(new
-                FileInputStream("/home/kiran/majorproject/SentimentAnalysis/src/testdata.txt"));
-        String count;
-        while((count = testData.readLine())!=null) {
-            tweets.add(count);
+        ArrayList<Integer> tweetRank = new ArrayList<Integer>();
+
+        RetrieveData retrieveData = new RetrieveData();
+        tweetArrayList = retrieveData.getTweetObjectList();
+        sizeOfTweet = tweetArrayList.size();
+
+        for(int i=0; i<sizeOfTweet; i++){
+            tweets.add(tweetArrayList.get(i).getTweet());
         }
-        testData.close();
 
-        //tokenization of text
-//        TextPreprocessor textProcess = new TextPreprocessor();
-//        textProcess.tokenizeByWord();
-//        textProcess.tokenizeBySentence();
-//        textProcess.posTags(tweets);
-
-
-        // dependency parsing
-//        DependencyParsing dParser = new DependencyParsing();
-//        String[] aggs= {"-tagger","-model"};
-//        dParser.parseSentence(args);
-
-        // sentiment analysis of tweets
+//      sentiment analysis of tweets
         SentimentAnalysis.init();
-        SentimentAnalysis.findSentiment(tweets);
+        tweetRank = SentimentAnalysis.findSentiment(tweets);
+
+        for(int i=0; i<sizeOfTweet; i++){
+            tweetArrayList.get(i).setSentimentRank(tweetRank.get(i));
+            System.out.println(tweetArrayList.get(i).getTweet()+" : "+
+                    tweetArrayList.get(i).getSentimentRank());
+        }
     }
 }
