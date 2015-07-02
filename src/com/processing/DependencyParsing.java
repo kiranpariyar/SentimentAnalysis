@@ -1,4 +1,4 @@
-package com.preprocessing;
+package com.processing;
 
 import edu.stanford.nlp.ling.HasWord;
 import edu.stanford.nlp.ling.TaggedWord;

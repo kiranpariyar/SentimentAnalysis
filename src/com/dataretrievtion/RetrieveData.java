@@ -1,17 +1,28 @@
-package dataretrievtion;
+package com.dataretrievtion;
 
 /**
  * Created by kiran on 6/29/15.
  */
 
-import com.preprocessing.SentimentAnalysis;
-import twitter4j.*;
-import twitter4j.auth.OAuth2Token;
-import twitter4j.conf.ConfigurationBuilder;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Map;
+/**
+ * 	Demonstration of how to retrieve more than 100 tweets using the Twitter API.
+ *
+ * 	It is based upon the Application Authentication example, and therefore uses application
+ * 	authentication.  It does not matter that much which type of authentication you use, although
+ * 	it will effect your rate limits.
+ *
+ * 	You will note that this code has only the bare minimum of error handling.  A real production application
+ * 	would have a lot more code in it to catch, diagnose, and recover from errors at all points of interaction
+ * 	with Twitter.
+ *
+ * 	@author	Charles McGuinness
+ */
+
+ import twitter4j.*;
+ import twitter4j.auth.OAuth2Token;
+ import twitter4j.conf.ConfigurationBuilder;
+ import java.util.ArrayList;
+ import java.util.Map;
 
 public class RetrieveData {
 
@@ -20,13 +31,27 @@ public class RetrieveData {
     private static final String CONSUMER_SECRET 	= "XrQRsmUuAdWSH8vKm9kFlw7JvNo9CCN2erCIcE4QnGfk9xntEv";
 
     //	How many tweets to retrieve in every call to Twitter. 100 is the maximum allowed in the API
-    private static final int TWEETS_PER_QUERY		= 5;
+    private static final int TWEETS_PER_QUERY		= 10;
 
+    //	This controls how many queries, maximum, we will make of Twitter before cutting off the results.
+    //	You will retrieve up to MAX_QUERIES*TWEETS_PER_QUERY tweets.
+    //
+    //  If you set MAX_QUERIES high enough (e.g., over 450), you will undoubtedly hit your rate limits
+    //  and you an see the program sleep until the rate limits reset
     private static final int MAX_QUERIES			= 1;
 
+    //	What we want to search for in this program.  Justin Bieber always returns as many results as you could
+    //	ever want, so it's safe to assume we'll get multiple pages back...
     //private static final String SEARCH_TERM= "until:2015-01-22 and love";
-    private static final String SEARCH_TERM= "since:2015-06-24 and samsung";
+    private static final String SEARCH_TERM= "until:2015-07-1 and samsung";
 
+
+    /**
+     * Replace newlines and tabs in text with escaped versions to making printing cleaner
+     *
+     * @param text	The text of a tweet, sometimes with embedded newlines and tabs
+     * @return		The text passed in, but with the newlines and tabs replaced
+     */
     public static String cleanText(String text)
     {
         text = text.replace("\n", "\\n");
@@ -35,6 +60,18 @@ public class RetrieveData {
         return text;
     }
 
+
+    /**
+     * Retrieve the "bearer" token from Twitter in order to make application-authenticated calls.
+     *
+     * This is the first step in doing application authentication, as described in Twitter's documentation at
+     * https://dev.twitter.com/docs/auth/application-only-auth
+     *
+     * Note that if there's an error in this process, we just print a message and quit.  That's a pretty
+     * dramatic side effect, and a better implementation would pass an error back up the line...
+     *
+     * @return	The oAuth2 bearer token
+     */
     public static OAuth2Token getOAuth2Token()
     {
         OAuth2Token token = null;
@@ -88,19 +125,39 @@ public class RetrieveData {
 
     }
 
-
     public static ArrayList<Tweet> getTweetObjectList()
     {
-        ArrayList<Tweet>  tweetObjectList = new ArrayList<Tweet>();
+        //	We're curious how many tweets, in total, we've retrieved.  Note that TWEETS_PER_QUERY is an upper limit,
+        //	but Twitter can and often will retrieve far fewer tweets
         int	totalTweets = 0;
+
+        //  Creating TweetObject List
+        ArrayList<Tweet> tweetObjectList = new ArrayList<Tweet>();
+
+        //	This variable is the key to our retrieving multiple blocks of tweets.  In each batch of tweets we retrieve,
+        //	we use this variable to remember the LOWEST tweet ID.  Tweet IDs are (java) longs, and they are roughly
+        //	sequential over time.  Without setting the MaxId in the query, Twitter will always retrieve the most
+        //	recent tweets.  Thus, to retrieve a second (or third or ...) batch of Tweets, we need to set the Max Id
+        //	in the query to be one less than the lowest Tweet ID we've seen already.  This allows us to page backwards
+        //	through time to retrieve additional blocks of tweets
         long maxID = -1;
-        String sentRank = " ";
 
         Twitter twitter = getTwitter();
 
         //	Now do a simple search to show that the tokens work
         try
         {
+            //	There are limits on how fast you can make API calls to Twitter, and if you have hit your limit
+            //	and continue to make calls Twitter will get annoyed with you.  I've found that going past your
+            //	limits now and then doesn't seem to be problematic, but if you have a program that keeps banging
+            //	the API when you're not allowed you will eventually get shut down.
+            //
+            //	Thus, the proper thing to do is always check your limits BEFORE making a call, and if you have
+            //	hit your limits sleeping until you are allowed to make calls again.
+            //
+            //	Every time you call the Twitter API, it tells you how many calls you have left, so you don't have
+            //	to ask about the next call.  But before the first call, we need to find out whether we're already
+            //	at our limit.
 
             //	This returns all the various rate limits in effect for us with the Twitter API
             Map<String, RateLimitStatus> rateLimitStatus = twitter.getRateLimitStatus("search");
@@ -126,6 +183,13 @@ public class RetrieveData {
                 {
                     //	Yes we do, unfortunately ...
                     System.out.printf("!!! Sleeping for %d seconds due to rate limits\n", searchTweetsRateLimit.getSecondsUntilReset());
+
+                    //	If you sleep exactly the number of seconds, you can make your query a bit too early
+                    //	and still get an error for exceeding rate limitations
+                    //
+                    // 	Adding two seconds seems to do the trick. Sadly, even just adding one second still triggers a
+                    //	rate limit exception more often than not.  I have no idea why, and I know from a Comp Sci
+                    //	standpoint this is really bad, but just add in 2 seconds and go about your business.  Or else.
                     Thread.sleep((searchTweetsRateLimit.getSecondsUntilReset()+2) * 1000l);
                 }
 
@@ -133,6 +197,14 @@ public class RetrieveData {
                 q.setCount(TWEETS_PER_QUERY);				// How many tweets, max, to retrieve
                 //q.resultType("recent");						// Get all tweets
                 q.setLang("en");							// English language tweets, please
+				/*// set the bounding dates
+				q.setSince(sdf.format(startDate));
+				q.setUntil(sdf.format(endDate));*/
+
+                //	If maxID is -1, then this is our first call and we do not want to tell Twitter what the maximum
+                //	tweet id is we want to retrieve.  But if it is not -1, then it represents the lowest tweet ID
+                //	we've seen, so we want to start at it-1 (if we start at maxID, we would see the lowest tweet
+                //	a second time...
                 if (maxID != -1)
                 {
                     q.setMaxId(maxID - 1);
@@ -141,11 +213,18 @@ public class RetrieveData {
                 //	This actually does the search on Twitter and makes the call across the network
                 QueryResult r = twitter.search(q);
 
+                //	If there are NO tweets in the result set, it is Twitter's way of telling us that there are no
+                //	more tweets to be retrieved.  Remember that Twitter's search index only contains about a week's
+                //	worth of tweets, and uncommon search terms can run out of week before they run out of tweets
                 if (r.getTweets().size() == 0)
                 {
                     break;			// Nothing? We must be done
                 }
 
+
+                //	loop through all the tweets and process them.  In this sample program, we just print them
+                //	out, but in a real application you might save them to a database, a CSV file, do some
+                //	analysis on them, whatever...
                 for (Status s: r.getTweets())				// Loop through all the tweets...
                 {
                     //	Increment our count of tweets retrieved
@@ -164,18 +243,12 @@ public class RetrieveData {
                             s.getUser().getScreenName(),
                             cleanText(s.getText()));*/
 
-//                    SentimentAnalysis.init();
-//                    String sentiRank = SentimentAnalysis.findSentiment(cleanText(s.getText()));
-
                     Tweet tweetObject = new Tweet();
                     tweetObject.setDate(s.getCreatedAt());
                     tweetObject.setName(s.getUser().getScreenName());
                     tweetObject.setTweet(cleanText(s.getText()));
                     tweetObject.setRetweet(s.getRetweetCount());
                     tweetObject.setNoOfFollower(s.getUser().getFollowersCount());
-//                    tweetObject.setSentiment(sentiRank);
-
-//                  System.out.println(tweetObject.getTweet()+" : "+tweetObject.getSentiment());
                     tweetObjectList.add(tweetObject);
 
                     /*PrintWriter out = new PrintWriter(new FileWriter("/home/kiran/Desktop/output.txt",true));

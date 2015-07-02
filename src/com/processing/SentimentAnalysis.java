@@ -1,4 +1,4 @@
-package com.preprocessing;
+package com.processing;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
@@ -7,7 +7,6 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.Tree;
 import edu.stanford.nlp.util.CoreMap;
-
 import java.util.ArrayList;
 import java.util.Properties;
 
@@ -15,6 +14,7 @@ import java.util.Properties;
  * Created by kiran on 6/26/15.
  */
 public class SentimentAnalysis {
+
 
     static StanfordCoreNLP pipeline;
     public static ArrayList<Integer> sentimentRank;
@@ -56,31 +56,3 @@ public class SentimentAnalysis {
         return sentimentRank;
     }
 }
-
-
-
-        /*    switch (mainSentiment){
-                case 0:
-//                    sentRank = "Very Negative";
-                    System.out.println(tweet + " :Very Negative "+ mainSentiment );
-                    break;
-                case 1:
-//                    sentRank = "Negative";
-                    System.out.println(tweet + " : Negative "+ mainSentiment );
-                    break;
-                case 2:
-//                    sentRank = "Neutral";
-                    System.out.println(tweet + " : Neutral "+ mainSentiment );
-                    break;
-                case 3:
-//                    sentRank = "Positive";
-                    System.out.println(tweet + " : Positive "+ mainSentiment );
-                    break;
-                case 4:
-//                    sentRank = "very positive";
-                    System.out.println(tweet + " : Very Positive "+ mainSentiment );
-                    break;
-                default:
-                    System.out.println("Sentiment cannot be predicted:");
-            }*/
-

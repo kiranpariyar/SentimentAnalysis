@@ -1,7 +1,8 @@
-package com.preprocessing;
+package com.processing;
 
-import dataretrievtion.RetrieveData;
-import dataretrievtion.Tweet;
+import com.databaseconnection.DataInsertion;
+import com.dataretrievtion.RetrieveData;
+import com.dataretrievtion.Tweet;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -21,6 +22,8 @@ public class Main {
             tweets.add(tweetArrayList.get(i).getTweet());
         }
 
+
+
 //      sentiment analysis of tweets
         SentimentAnalysis.init();
         tweetRank = SentimentAnalysis.findSentiment(tweets);
@@ -30,5 +33,11 @@ public class Main {
             System.out.println(tweetArrayList.get(i).getTweet()+" : "+
                     tweetArrayList.get(i).getSentimentRank());
         }
+
+        //saving data to mongodb
+
+        DataInsertion dataInsertion = new DataInsertion();
+        dataInsertion.insertTweetList(tweetArrayList);
+
     }
 }

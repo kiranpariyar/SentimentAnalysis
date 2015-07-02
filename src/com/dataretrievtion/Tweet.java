@@ -1,4 +1,4 @@
-package dataretrievtion;
+package com.dataretrievtion;
 
 import java.util.Date;
 
