@@ -13,6 +13,8 @@ public class DataInsertion {
 
     public void insertTweetList(ArrayList<Tweet> tweetArrayList) throws IOException{
 
+
+
         MongoClient mongoClient = new MongoClient("localhost",27017);
         DB db = mongoClient.getDB("tweetdatabase");
         DBCollection dbCollection = db.getCollection("tweet");

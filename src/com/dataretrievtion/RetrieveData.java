@@ -43,8 +43,9 @@ public class RetrieveData {
     //	What we want to search for in this program.  Justin Bieber always returns as many results as you could
     //	ever want, so it's safe to assume we'll get multiple pages back...
     //private static final String SEARCH_TERM= "until:2015-01-22 and love";
-    private static final String SEARCH_TERM= "until:2015-07-1 and samsung";
+    private static final String SEARCH_TERM= "samsung";
 
+    public static ArrayList<Tweet> tweetObjectList;
 
     /**
      * Replace newlines and tabs in text with escaped versions to making printing cleaner
@@ -125,14 +126,14 @@ public class RetrieveData {
 
     }
 
-    public static ArrayList<Tweet> getTweetObjectList()
+    public static void getTweetObjectList()
     {
         //	We're curious how many tweets, in total, we've retrieved.  Note that TWEETS_PER_QUERY is an upper limit,
         //	but Twitter can and often will retrieve far fewer tweets
         int	totalTweets = 0;
 
         //  Creating TweetObject List
-        ArrayList<Tweet> tweetObjectList = new ArrayList<Tweet>();
+        tweetObjectList = new ArrayList<Tweet>();
 
         //	This variable is the key to our retrieving multiple blocks of tweets.  In each batch of tweets we retrieve,
         //	we use this variable to remember the LOWEST tweet ID.  Tweet IDs are (java) longs, and they are roughly
@@ -273,6 +274,6 @@ public class RetrieveData {
         }
 
         System.out.printf("\n\nA total of %d tweets retrieved\n", totalTweets);
-        return tweetObjectList;
+//        return tweetObjectList;
     }
 }
