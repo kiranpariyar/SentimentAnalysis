@@ -2,14 +2,18 @@ package com.processing;
 
 import com.databaseconnection.DataInsertion;
 import com.dataretrievtion.RetrieveData;
+import com.dataretrievtion.Tweet;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
+
 public class Main {
+
 
     public static void main(String[] args) throws IOException {
         int sizeOfTweet;
-
+        ArrayList<Tweet> tweetObjectList;
         //for storing tweets and rank
         ArrayList<String> tweets = new ArrayList<String>();
         ArrayList<Integer> tweetRank = new ArrayList<Integer>();
@@ -17,13 +21,14 @@ public class Main {
         //Retrieving Tweets from twitter
         System.out.println("Retrieving Tweets from twitter :\n");
         RetrieveData retrieveData = new RetrieveData();
-        retrieveData.getTweetObjectList();
-        sizeOfTweet = retrieveData.tweetObjectList.size();
+        tweetObjectList = retrieveData.getTweetObjectList();
+        sizeOfTweet = tweetObjectList.size();
 
 
         for(int i=0; i<sizeOfTweet; i++){
-            tweets.add(retrieveData.tweetObjectList.get(i).getTweet());
-            System.out.println(tweets.get(i));
+//            System.out.println(tweetObjectList.get(i).getTweet());
+            tweets.add(tweetObjectList.get(i).getTweet());
+//            System.out.println(tweets.get(i));
         }
 
         //Preprocessing the tweets
@@ -37,19 +42,18 @@ public class Main {
 
 
 //      sentiment analysis of tweets
+        System.out.println("\nProcessing Sentiment Analysis of Tweets:");
         SentimentAnalysis.init();
         tweetRank = SentimentAnalysis.findSentiment(tweets);
 
         for(int i=0; i<sizeOfTweet; i++){
-            retrieveData.tweetObjectList.get(i).setSentimentRank(tweetRank.get(i));
-            System.out.println(retrieveData.tweetObjectList.get(i).getTweet()+" : "+
-                    retrieveData.tweetObjectList.get(i).getSentimentRank());
+            tweetObjectList.get(i).setSentimentRank(tweetRank.get(i));
+            System.out.println(tweetObjectList.get(i).getTweet()+" : "+ tweetObjectList.get(i).getSentimentRank());
         }
 
         //saving data to mongodb
-
+        System.out.println("\n");
         DataInsertion dataInsertion = new DataInsertion();
-        dataInsertion.insertTweetList(retrieveData.tweetObjectList);
-
+        dataInsertion.insertTweetList(tweetObjectList);
     }
 }

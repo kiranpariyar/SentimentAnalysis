@@ -11,7 +11,7 @@ public class TweetPreproces {
 
     public ArrayList<String> getPreprocessedTweet(ArrayList<String> tweetList){
 
-        System.out.println(tweetList.size());
+//        System.out.println(tweetList.size());
 
         for (int i=0; i<tweetList.size(); i++){
             String str=tweetList.get(i);

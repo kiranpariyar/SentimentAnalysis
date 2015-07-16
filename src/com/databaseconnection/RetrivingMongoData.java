@@ -29,7 +29,7 @@ public class RetrivingMongoData {
         for(int i=0;i<sentiment.size();i++)
             if((Integer)sentiment.get(i)==1)
                 positive++;
-            else if((Integer)sentiment.getd(i)==2)
+            else if((Integer)sentiment.get(i)==2)
                 negative++;
             else
                 neutral++;

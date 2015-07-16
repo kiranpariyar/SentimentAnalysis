@@ -45,7 +45,7 @@ public class RetrieveData {
     //private static final String SEARCH_TERM= "until:2015-01-22 and love";
     private static final String SEARCH_TERM= "samsung";
 
-    public static ArrayList<Tweet> tweetObjectList;
+    private static ArrayList<Tweet> tweetObjectList;
 
     /**
      * Replace newlines and tabs in text with escaped versions to making printing cleaner
@@ -126,7 +126,7 @@ public class RetrieveData {
 
     }
 
-    public static void getTweetObjectList()
+    public static ArrayList<Tweet> getTweetObjectList()
     {
         //	We're curious how many tweets, in total, we've retrieved.  Note that TWEETS_PER_QUERY is an upper limit,
         //	but Twitter can and often will retrieve far fewer tweets
@@ -177,7 +177,7 @@ public class RetrieveData {
             //	This is the loop that retrieve multiple blocks of tweets from Twitter
             for (int queryNumber=0;queryNumber < MAX_QUERIES; queryNumber++)
             {
-                System.out.printf("\n\n!!! Starting loop %d\n\n", queryNumber);
+                System.out.printf("\n!!Starting loop %d\n", queryNumber);
 
                 //	Do we need to delay because we've already hit our rate limits?
                 if (searchTweetsRateLimit.getRemaining() == 0)
@@ -273,7 +273,7 @@ public class RetrieveData {
             e.printStackTrace();
         }
 
-        System.out.printf("\n\nA total of %d tweets retrieved\n", totalTweets);
-//        return tweetObjectList;
+        System.out.printf("A total of %d tweets retrieved\n", totalTweets);
+        return tweetObjectList;
     }
 }
