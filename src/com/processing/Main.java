@@ -43,7 +43,6 @@ public class Main {
 
 //      sentiment analysis of tweets
         System.out.println("\nProcessing Sentiment Analysis of Tweets:");
-        SentimentAnalysis.init();
         tweetRank = SentimentAnalysis.findSentiment(tweets);
 
         for(int i=0; i<sizeOfTweet; i++){

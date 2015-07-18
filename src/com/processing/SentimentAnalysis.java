@@ -15,21 +15,18 @@ import java.util.Properties;
  */
 public class SentimentAnalysis {
 
-
     static StanfordCoreNLP pipeline;
     public static ArrayList<Integer> sentimentRank;
-
-    //initializing pipeline with annotators "tokenize, ssplit parse and sentiment"
-    public static void init() {
-        Properties properties = new Properties();
-        properties.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
-        pipeline = new StanfordCoreNLP(properties);
-    }
 
     //performing sentiment analysis on tweets
     public static ArrayList<Integer> findSentiment(ArrayList<String> alltweet) {
         sentimentRank = new ArrayList<Integer>();
         String tweet;
+
+        //initializing pipeline with annotators "tokenize, ssplit parse and sentiment"
+        Properties properties = new Properties();
+        properties.setProperty("annotators", "tokenize, ssplit, parse, sentiment");
+        pipeline = new StanfordCoreNLP(properties);
 
         for (int i = 0; i < alltweet.size(); i++) {
             int mainSentiment = 0;
