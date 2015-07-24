@@ -1,6 +1,6 @@
 package com.processing;
 
-import com.databaseconnection.DataInsertion;
+import com.databaseconnection.DatabaseConnection;
 import com.dataretrievtion.RetrieveData;
 import com.dataretrievtion.Tweet;
 
@@ -49,10 +49,13 @@ public class Main {
             tweetObjectList.get(i).setSentimentRank(tweetRank.get(i));
             System.out.println(tweetObjectList.get(i).getTweet()+" : "+ tweetObjectList.get(i).getSentimentRank());
         }
-
+        
         //saving data to mongodb
         System.out.println("\n");
-        DataInsertion dataInsertion = new DataInsertion();
-        dataInsertion.insertTweetList(tweetObjectList);
+        DatabaseConnection databaseConnection = new DatabaseConnection();
+        databaseConnection.init();
+        databaseConnection.insertTweetList(tweetObjectList);
+        databaseConnection.retrieveTweetList();
+        databaseConnection.countDistinctRank();
     }
 }

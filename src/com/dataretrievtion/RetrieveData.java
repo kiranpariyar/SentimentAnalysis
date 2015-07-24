@@ -31,7 +31,7 @@ public class RetrieveData {
     private static final String CONSUMER_SECRET 	= "XrQRsmUuAdWSH8vKm9kFlw7JvNo9CCN2erCIcE4QnGfk9xntEv";
 
     //	How many tweets to retrieve in every call to Twitter. 100 is the maximum allowed in the API
-    private static final int TWEETS_PER_QUERY		= 10;
+    private static final int TWEETS_PER_QUERY		= 100;
 
     //	This controls how many queries, maximum, we will make of Twitter before cutting off the results.
     //	You will retrieve up to MAX_QUERIES*TWEETS_PER_QUERY tweets.
@@ -43,7 +43,7 @@ public class RetrieveData {
     //	What we want to search for in this program.  Justin Bieber always returns as many results as you could
     //	ever want, so it's safe to assume we'll get multiple pages back...
     //private static final String SEARCH_TERM= "until:2015-01-22 and love";
-    private static final String SEARCH_TERM= "samsung";
+    private static final String SEARCH_TERM= "amazon";
 
     private static ArrayList<Tweet> tweetObjectList;
 
